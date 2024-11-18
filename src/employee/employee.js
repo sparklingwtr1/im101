@@ -11,31 +11,28 @@ const EmployeeLoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-
-    // Check if the email follows the required format
-    if (!employeeId.endsWith('@pos.employee.nene')) {
-      setError('Email must end with @pos.employee.nene');
-      setLoading(false);
-      return;
-    }
-
-    // Simulating employee credential validation
+    setError(null);
+  
     try {
-      const storedEmployees = JSON.parse(localStorage.getItem('employees')) || [];
-      const employee = storedEmployees.find(emp => emp.email === employeeId && emp.password === password);
-      
-      if (employee) {
-        // Redirect to employee dashboard
+      const response = await fetch('http://localhost/admin.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId, password })
+      });
+      const data = await response.json();
+  
+      if (data.success) {
         navigate('/employee-dashboard');
       } else {
-        setError('Invalid credentials. Please try again.');
+        setError(data.error || 'Login failed. Please try again.');
       }
     } catch (error) {
-      setError('Login failed. Please try again.');
+      setError('Server error. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center h-screen">

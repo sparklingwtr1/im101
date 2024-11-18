@@ -1,7 +1,7 @@
 // EmployeeDashboard.js
 import React, { useState } from 'react';
 import Orders from '../admin/OrderManagement'; // Component for managing orders
-import Inventory from '../admin/InventoryManagement'; // Component for managing inventory
+
 
 const EmployeeDashboard = () => {
   const [activeTab, setActiveTab] = useState('orders'); // Default active tab
@@ -25,12 +25,6 @@ const EmployeeDashboard = () => {
           >
             Manage Orders
           </li>
-          <li
-            className={`cursor-pointer py-2 ${activeTab === 'inventory' ? 'bg-gray-600' : ''}`} // Inventory Management tab
-            onClick={() => setActiveTab('inventory')}
-          >
-            Manage Inventory
-          </li>
         </ul>
       </aside>
 
@@ -53,7 +47,6 @@ const EmployeeDashboard = () => {
 
         {/* Conditional rendering based on selected tab */}
         {activeTab === 'orders' && <Orders />}
-        {activeTab === 'inventory' && <Inventory />}
       </main>
     </div>
   );

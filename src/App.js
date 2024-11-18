@@ -10,7 +10,7 @@ import Dashboard from './users/dashboard';
 import Admin from './admin/adminDashboard';
 import Employee from './employee/employee';
 import EDash from './employee/EmployeeDashboard';
-
+import ThankYou from './main/thanks';
 
 
 
@@ -34,6 +34,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/employee" element={<Employee />} />
           <Route path="/employee-dashboard" element={<EDash />} />
+          <Route path="/thanks" element={<ThankYou />} />
         </Routes>
       </div>
     </Router>

@@ -34,7 +34,7 @@ const Header = () => {
 
         const data = await response.json();
         console.log('Data received from backend:', data);
-
+        
         if (data.username) {
           setUsername(data.username);
           setError(null);

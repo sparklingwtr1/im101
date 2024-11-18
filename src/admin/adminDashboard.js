@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuManagement from '../admin/MenuManagement';
 import OrderManagement from '../admin/OrderManagement';
-import UserManagement from '../admin/UserManagement';
 import EmployeeManagement from '../admin/EmployeeManagement';
-import InventoryManagement from '../admin/InventoryManagement'; // Import the new Inventory Management component
+
 import SalesReportManagement from '../admin/SalesReportManagement'; // Import the new Sales Report Management component
 
 const AdminDashboard = () => {
@@ -35,23 +34,12 @@ const AdminDashboard = () => {
           >
             Order Management
           </li>
-          <li
-            className={`cursor-pointer py-2 ${activeTab === 'users' ? 'bg-gray-600' : ''}`}
-            onClick={() => setActiveTab('users')}
-          >
-            User Management
-          </li>
+          
           <li
             className={`cursor-pointer py-2 ${activeTab === 'employees' ? 'bg-gray-600' : ''}`}
             onClick={() => setActiveTab('employees')}
           >
             Employee Management
-          </li>
-          <li
-            className={`cursor-pointer py-2 ${activeTab === 'inventory' ? 'bg-gray-600' : ''}`} // Inventory Management tab
-            onClick={() => setActiveTab('inventory')}
-          >
-            Inventory Management
           </li>
           <li
             className={`cursor-pointer py-2 ${activeTab === 'sales' ? 'bg-gray-600' : ''}`} // Sales Report Management tab
@@ -76,12 +64,10 @@ const AdminDashboard = () => {
               ? 'Manage Menu' 
               : activeTab === 'orders' 
               ? 'Manage Orders' 
-              : activeTab === 'users' 
-              ? 'Manage Users' 
+              
               : activeTab === 'employees' 
               ? 'Manage Employees' 
-              : activeTab === 'inventory' 
-              ? 'Manage Inventory' 
+ 
               : 'Manage Sales Reports' // Add title for Inventory and Sales Report Management
             }
           </h1>
@@ -93,9 +79,7 @@ const AdminDashboard = () => {
         {/* Conditional rendering based on selected tab */}
         {activeTab === 'menu' && <MenuManagement />}
         {activeTab === 'orders' && <OrderManagement />}
-        {activeTab === 'users' && <UserManagement />}
         {activeTab === 'employees' && <EmployeeManagement />}
-        {activeTab === 'inventory' && <InventoryManagement />} {/* Render Inventory Management component */}
         {activeTab === 'sales' && <SalesReportManagement />} {/* Render Sales Report Management component */}
       </main>
     </div>

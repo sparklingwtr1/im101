@@ -1,94 +1,85 @@
 <?php
-header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *");
+// payment.php
+
+header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *"); // or specify the allowed origin
 header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Headers: Content-Type");
 
 
-// Database connection details
-$host = 'localhost';
-$dbname = 'restaurant';
-$username = '';
-$password = '';
 
-// Create connection
-$conn = new mysqli($host, $username, $password, $dbname);
+
+// Get the JSON input from the request body
+$input = json_decode(file_get_contents('php://input'), true);
+
+// Check if input data is available
+if (!$input) {
+    echo json_encode(['success' => false, 'message' => 'No input data provided']);
+    exit;
+}
+
+// Database connection (configure your own credentials here)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "restaurant";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
+    die(json_encode(['success' => false, 'message' => 'Database connection failed']));
 }
 
-// Get the payment data from the request
-$data = json_decode(file_get_contents("php://input"), true);
+// Extract data from the input
+$customerId = $input['customerId'];
+$totalAmount = $input['totalAmount'];
+$orderDetails = $input['orderDetails'];
+$billingDetails = $input['billingDetails'];
+$paymentMethod = $input['paymentMethod'];
 
-if ($data === null) {
-    error_log('Received invalid JSON data');
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON data']);
-    exit;
-}
-// Log received data for debugging
-error_log(print_r($data, true));
-
-// Make sure you are accessing the correct keys
-$customerId = isset($data['customerId']) ? $data['customerId'] : null;
-$orderDetails = isset($data['orderDetails']) ? $data['orderDetails'] : null;
-$billingDetails = isset($data['billingDetails']) ? $data['billingDetails'] : null;
-$paymentMethod = isset($data['paymentMethod']) ? $data['paymentMethod'] : null;
-
-if (!$customerId || !$orderDetails || !$billingDetails || !$paymentMethod) {
-    error_log('Missing required payment data');
-    echo json_encode(['success' => false, 'message' => 'Missing required payment data']);
-    exit;
-}
-
-// Start a transaction
+// Use transaction to ensure atomicity
 $conn->begin_transaction();
 
 try {
-    // Insert into orders table
-    $orderSql = "INSERT INTO orders (customer_id, order_date, total_price) VALUES (?, NOW(), ?)";
-    $stmt = $conn->prepare($orderSql);
-    $stmt->bind_param("id", $customerId, $totalAmount);
+    // Insert data into `order` table
+    $orderDate = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("INSERT INTO order_details (customer_id, order_date, total_price) VALUES (?, ?, ?)");
+    $stmt->bind_param("isd", $customerId, $orderDate, $totalAmount);
     $stmt->execute();
-    $orderId = $stmt->insert_id;
+    $orderId = $conn->insert_id;
 
-    // Insert into billing table
-    $billingSql = "INSERT INTO billing (order_id, customer_id, total_amount, date) VALUES (?, ?, ?, NOW())";
-    $stmt = $conn->prepare($billingSql);
-    $stmt->bind_param("iid", $orderId, $customerId, $totalAmount);
-    $stmt->execute();
-    $billingId = $stmt->insert_id;
-
-    // Insert into payment table
-    $paymentSql = "INSERT INTO payment (order_id, billing_id, customer_id, total_amount, date, mode_of_payment) VALUES (?, ?, ?, ?, NOW(), ?)";
-    $stmt = $conn->prepare($paymentSql);
-    $stmt->bind_param("iiids", $orderId, $billingId, $customerId, $totalAmount, $paymentMethod);
-    $stmt->execute();
-
-    // Insert each ordered item into order_items table
+    // Insert data into `order_item` table
+    $stmt = $conn->prepare("INSERT INTO orderitems (order_id, item_name, quantity, price) VALUES (?, ?, ?, ?)");
     foreach ($orderDetails['items'] as $item) {
-        $itemId = $conn->real_escape_string($item['item_id']);
-        $quantity = $conn->real_escape_string($item['quantity']);
-        $price = $conn->real_escape_string($item['price']);
-
-        $itemSql = "INSERT INTO order_items (order_id, item_id, quantity, price) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($itemSql);
-        $stmt->bind_param("iiid", $orderId, $itemId, $quantity, $price);
+        $stmt->bind_param("isid", $orderId, $item['item_name'], $item['quantity'], $item['price']);
         $stmt->execute();
     }
 
+    // Insert data into `billing` table
+    $billingDate = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("INSERT INTO billing (order_id, customer_id, total_amount, date, address) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("iisss", $orderId, $customerId, $totalAmount, $billingDate, $billingDetails['address']);
+    $stmt->execute();
+    $billingId = $conn->insert_id;
+
+    // Insert data into `payment` table
+    $paymentDate = date("Y-m-d H:i:s");
+    $stmt = $conn->prepare("INSERT INTO payment (order_id, billing_id, customer_id, total_amount, date) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("iiids", $orderId, $billingId, $customerId, $totalAmount, $paymentDate);
+    $stmt->execute();
+
     // Commit the transaction
     $conn->commit();
-
     echo json_encode(['success' => true, 'message' => 'Payment processed successfully']);
+
 } catch (Exception $e) {
-    // Rollback the transaction if any error occurs
+    // Rollback transaction if an error occurs
     $conn->rollback();
     echo json_encode(['success' => false, 'message' => 'Error processing payment: ' . $e->getMessage()]);
 }
 
-// Close the connection
+// Close connections
+$stmt->close();
 $conn->close();
 ?>

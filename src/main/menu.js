@@ -12,7 +12,7 @@ function Menu() {
   // Function to fetch menu items from the API
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('https://sparklingwater1.helioho.st/getMenuItems.php'); // Update URL as needed
+      const response = await fetch('http://localhost/getMenuItems.php'); // Update URL as needed
       const data = await response.json();
       setMenuItems(data);
     } catch (error) {

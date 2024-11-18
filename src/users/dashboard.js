@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../main/header';
+import OrderD from '../users/ordersDash'; // Import your OrdersDash component
 
 function Dashboard() {
   const storedEmail = localStorage.getItem('userEmail');
@@ -13,12 +14,11 @@ function Dashboard() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard'); // To switch between Dashboard, Settings, and Orders
-  const [orders, setOrders] = useState([]); // State for storing customer orders
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('https://sparklingwater1.helioho.st/getUser.php', {
+        const response = await fetch('http://localhost/getUser.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: storedEmail }), // Send stored email to API
@@ -41,33 +41,10 @@ function Dashboard() {
       }
     };
 
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch('https://sparklingwater1.helioho.st/getOrders.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: storedEmail }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const orderData = await response.json();
-        setOrders(orderData);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        setError('Failed to fetch orders.');
-      }
-    };
-
     if (storedEmail) {
       fetchUserData();
-      if (activeTab === 'orders') {
-        fetchOrders();
-      }
     }
-  }, [storedEmail, activeTab]);
+  }, [storedEmail]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -210,24 +187,7 @@ function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'orders' && (
-            <div>
-              <h2 className="text-3xl font-bold text-center mb-6">Your Orders</h2>
-              <ul>
-                {orders.length > 0 ? (
-                  orders.map((order, index) => (
-                    <li key={index} className="bg-gray-200 p-4 rounded-lg mb-4 shadow-lg">
-                      <p><strong>Order ID:</strong> {order.id}</p>
-                      <p><strong>Date:</strong> {order.date}</p>
-                      <p><strong>Total:</strong> ${order.total}</p>
-                    </li>
-                  ))
-                ) : (
-                  <p className="text-center">You have no orders yet.</p>
-                )}
-              </ul>
-            </div>
-          )}
+          {activeTab === 'orders' && <OrderD />} {/* Show the OrdersDash component here */}
         </div>
       </div>
     </>

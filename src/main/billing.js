@@ -1,64 +1,78 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-function Billing() {
-  const location = useLocation();
+const Billing = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { total = 0, order = {} } = location.state || {}; // Destructure total and order from location state
 
-  // Ensure location.state exists to avoid errors
-  const { total = 0, order = {} } = location.state || {};
-
-  // Handle case where items may be undefined or empty
-  const orders = order.items || [];
-
-  // Set up formData using the order details if available
-  const [formData, setFormData] = useState({
-    firstName: order.firstName || '',
-    lastName: order.lastName || '',
-    email: order.email || '',
-    confirmEmail: order.email || '', // Pre-fill confirmEmail to match email
-    address: order.address || '',
-    number: order.number || '',
-    items: orders, // Set items from order
+  const [userData, setUserData] = useState({
+    email: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    address: '',
+    items: order.items || [], // Set items from order state or default to an empty array
   });
+  const [error, setError] = useState(null);
 
-  // Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  // Retrieve email from local storage
+  const storedEmail = localStorage.getItem('userEmail'); 
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Fetch user details from the backend
+  const fetchUserData = useCallback(async () => {
+    if (storedEmail) {
+      try {
+        const response = await fetch('http://localhost/getUserDetails.php', {
+          method: 'POST',
+          headers: {  
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: storedEmail }),
+        });
 
-    // Check if email and confirmEmail match
-    if (formData.email !== formData.confirmEmail) {
-      alert('Email and Confirm Email do not match!');
-      return;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.username) {
+          setUserData({
+            email: data.email,
+            username: data.username,
+            firstName: data.first_name,
+            lastName: data.last_name,
+            phoneNumber: data.phone_number,
+            address: data.address,
+            items: order.items || [],
+          });
+          setError(null);
+        } else {
+          setError(data.message || 'No user found');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        setError('Failed to fetch user data.');
+      }
+    } else {
+      setError('No email found in local storage.');
     }
+  }, [storedEmail, order.items]);
 
-    // Store billing details and ordered items in local storage
-    localStorage.setItem('billingDetails', JSON.stringify({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      address: formData.address,
-      number: formData.number,
-      items: orders,
-    }));
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
 
-    // Redirect to the payment page and pass the form data and total
+  const handleProceedToPayment = () => {
+    // Store billing details in local storage for persistence
+    localStorage.setItem('billingDetails', JSON.stringify(userData));
+
+    // Redirect to payment page with order details and total
     navigate('/payment', {
       state: {
-        order: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          address: formData.address,
-          number: formData.number,
-          items: orders, // Ensure the items are passed properly
-        },
-        total: total, // Pass total properly
+        order: userData,
+        total: total, // Pass total properly here
       },
     });
   };
@@ -68,95 +82,49 @@ function Billing() {
       <h1 className="text-3xl font-bold text-center mb-6">Billing Details</h1>
 
       <div className="bg-white p-6 rounded-lg shadow-md max-w-lg mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Order Total: ₱{total}</h2>
+        <h2 className="text-2xl font-bold mb-4">Order Total: ₱{total.toFixed(2)}</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-gray-700 font-bold mb-2">First Name</label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                required
-              />
+        {error ? (
+          <p className="text-red-500 text-center">{error}</p>
+        ) : (
+          <>
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">Username:</p>
+              <p>{userData.username}</p>
             </div>
-            <div>
-              <label className="block text-gray-700 font-bold mb-2">Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-                required
-              />
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">First Name:</p>
+              <p>{userData.firstName}</p>
             </div>
-          </div>
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">Last Name:</p>
+              <p>{userData.lastName}</p>
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">Email:</p>
+              <p>{userData.email}</p>
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">Address:</p>
+              <p>{userData.address}</p>
+            </div>
+            <div className="mb-4">
+              <p className="text-gray-700 font-bold">Phone Number:</p>
+              <p>{userData.phoneNumber}</p>
+            </div>
+          </>
+        )}
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Confirm Email</label>
-            <input
-              type="email"
-              name="confirmEmail"
-              value={formData.confirmEmail}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-            {formData.email !== formData.confirmEmail && (
-              <p className="text-red-500 text-sm mt-1">Emails must match.</p>
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Phone Number</label>
-            <input
-              type="text"
-              name="number"
-              value={formData.number}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full"
-          >
-            Proceed to Payment
-          </button>
-        </form>
+        <button
+          onClick={handleProceedToPayment}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full"
+          disabled={!!error} // Disable button if there's an error
+        >
+          Proceed to Payment
+        </button>
       </div>
     </div>
   );
-}
+};
 
 export default Billing;

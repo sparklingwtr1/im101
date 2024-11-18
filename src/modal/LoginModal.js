@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, googleProvider } from '../firebase/firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
+
 
 
 
@@ -32,24 +31,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     localStorage.setItem('userEmail', userEmail);
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    try {
-      
-      const result = await signInWithPopup(auth, googleProvider);
-      const customer = result.customer;
-      saveEmailToLocalStorage(customer.email);
-      const orderItems = JSON.parse(localStorage.getItem('orderItems')) || [];
-      const totalAmount = localStorage.getItem('totalAmount') || 0;
-      navigate('/billing', { state: { orderItems, totalAmount } });
-      onClose();
-    } catch (error) {
-      setError('Google login failed. Please try again.');
-      console.error('Google login error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,7 +55,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     } else {
       // Proceed with normal user login
       try {
-        const response = await fetch('https://sparklingwater1.helioho.st/login.php', {
+        const response = await fetch('http://localhost/login.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -111,7 +93,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     }
   
     try {
-      const response = await fetch('https://sparklingwater1.helioho.st/register.php', {
+      const response = await fetch('http://localhost/register.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -157,14 +139,6 @@ const FlipCardModal = ({ isOpen, onClose }) => {
             <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
               <div className="flip-card-front">
                 <h1 className="text-2xl font-bold mb-2 text-center">Log In</h1>
-                <button
-                  onClick={handleGoogleLogin}
-                  className="w-full bg-red-500 text-white font-bold py-2 rounded-lg mb-6 hover:bg-red-600"
-                >
-                  Continue with Google
-                </button>
-
-                <div className="text-center text-gray-500 my-2">or</div>
 
                 <form onSubmit={handleLogin} className="flex flex-col items-center w-full">
                   <div className="mb-6 w-full">
