@@ -1,3 +1,4 @@
+import logo from '../image/zorbox.png';
 import React, { useState, useEffect, useCallback } from 'react';
 import { auth } from '../firebase/firebaseConfig'; 
 import { useNavigate } from 'react-router-dom';
@@ -92,27 +93,29 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-gray-800 text-white shadow-md">
+      <header className="bg-gray-900 text-white shadow-md">
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="text-2xl font-bold">
-            <a href="/">Logo</a>
+            <a href="/">
+              <img src={logo} alt="Logo" className="h-10" />
+            </a>
           </div>
           <nav>
             <ul className="flex space-x-4">
               <li>
-                <a href="/" className="text-2xl hover:text-gray-400">Home</a>
+                <a href="/" className="text-xl hover:text-gray-300">Home</a>
               </li>
               <li>
-                <a href="/menu" className="text-2xl hover:text-gray-400">Menu</a>
+                <a href="/menu" className="text-xl hover:text-gray-300">Menu</a>
               </li>
               <li>
-                <a href="/service" className="text-2xl hover:text-gray-400">Services</a>
+                <a href="/service" className="text-xl hover:text-gray-300">Services</a>
               </li>
               {username ? (
                 <li className="relative dropdown">
                   <button
                     onClick={toggleDropdown}
-                    className="text-2xl hover:text-gray-400 relative"
+                    className="text-xl hover:text-gray-300 relative"
                   >
                     {username}
                   </button>
@@ -141,7 +144,7 @@ const Header = () => {
                 <li>
                   <button
                     onClick={openModal}
-                    className="text-2xl hover:text-gray-400"
+                    className="text-xl hover:text-gray-300 bg-gray-800 hover:bg-gray-700 transition-colors duration-200 text-white"
                   >
                     Login
                   </button>
