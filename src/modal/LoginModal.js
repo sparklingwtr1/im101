@@ -168,6 +168,21 @@ const FlipCardModal = ({ isOpen, onClose }) => {
                       )}
                     </form>
 
+<<<<<<< HEAD
+=======
+                  {loading ? (
+                    <div className="spinner"></div>
+                  ) : (
+                    <button
+                   type="submit"
+                    className="w-full bg-[#8b5e3c] text-white font-bold py-2 rounded-lg hover:bg-[#6e4a30]"
+                    >
+                    Log In
+                  </button>
+
+                  )}
+                </form>
+>>>>>>> 5a9b35474374475c462ce84a8b9344054b971d18
 
                 <div className="text-center mt-6">
                   <p className="text-gray-500">
@@ -302,6 +317,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           </div>
         </div>
       )}
+<<<<<<< HEAD
       <style jsx>{`
         .flip-card {
           width: 100%;
@@ -354,6 +370,103 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           }
         }
       `}</style>
+=======
+      <style jsx>
+  {`
+    .flip-card {
+      width: 100%;
+      max-width: 600px;
+      height: 60%;
+      position: relative;
+      perspective: 1000px;
+      overflow: hidden;
+      margin: 0 auto;
+      background: #faf5e6; /* Soft cream background for card */
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    .flip-card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .flip-card-front {
+      background: #fffbf0; /* Slightly darker cream color */
+    }
+
+    .flip-card-back {
+      background: #fffbf0;
+      transform: rotateY(180deg);
+    }
+
+    /* Form Elements */
+    label {
+      color: #6d4c41; /* Warm brown */
+    }
+
+    input {
+      border-color: #e5c29f; /* Soft warm border */
+      background-color: #fff8e7; /* Lighter cream */
+    }
+
+    input:focus {
+      border-color: #d69c6a; /* Darker warm accent */
+      box-shadow: 0 0 4px rgba(214, 156, 106, 0.3);
+    }
+
+    /* Buttons */
+    button {
+      background-color: #a3835f;
+      color: #fff;
+    }
+
+    button:hover {
+      background-color: #8a704d; /* Darker shade for hover */
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 224, 192, 0.3); /* Cream tint for spinner */
+      border-left-color: #a3835f; /* Warm brown accent */
+    }
+
+    .text-blue-500 {
+      color: #a3835f; /* Warm brown accent for links */
+    }
+
+    .text-blue-500:hover {
+      color: #8a704d; /* Darker shade for hover links */
+    }
+
+    /* Error Message */
+    .text-red-500 {
+      color: #d9534f;
+      background-color: #fff0f0;
+      padding: 5px 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  `}
+</style>
+
+>>>>>>> 5a9b35474374475c462ce84a8b9344054b971d18
     </>
   );
 };
