@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import Modal from 'react-modal';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // Set the app element for accessibility
 Modal.setAppElement('#root');
@@ -13,26 +9,24 @@ const MenuManagement = () => {
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState('');
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [branchModalIsOpen, setBranchModalIsOpen] = useState(false); // New state for branch modal
     const [newItemName, setNewItemName] = useState('');
     const [newItemPrice, setNewItemPrice] = useState('');
     const [loading, setLoading] = useState(false);
+    const [newItemImage, setNewItemImage] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [newBranchName, setNewBranchName] = useState(''); // State for new branch name
+    const [newBranchAddress, setNewBranchAddress] = useState(''); // State for new branch address
+    const [newBranchCity, setNewBranchCity] = useState(''); // State for new branch city
+    const [newBranchPhone, setNewBranchPhone] = useState(''); // State for new branch phone number
 
     useEffect(() => {
         const fetchMenuItems = async () => {
             setLoading(true);
             try {
-                const response = await fetch('https://sparklingwater1.helioho.st/getMenuItems.php');
+                const response = await fetch('http://localhost/getMenuItems.php');
                 const data = await response.json();
-                if (Array.isArray(data)) {
-                    // Parse price to number to avoid type issues
-                    const parsedData = data.map(item => ({
-                        ...item,
-                        price: Number(item.price), // Ensure price is a number
-                    }));
-                    setMenuItems(parsedData);
-                } else {
-                    console.error('Invalid data format for menu items:', data);
-                }
+                setMenuItems(data);
             } catch (error) {
                 console.error('Error fetching menu items:', error);
             } finally {
@@ -45,11 +39,7 @@ const MenuManagement = () => {
             try {
                 const response = await fetch('http://localhost/getBranches.php');
                 const data = await response.json();
-                if (Array.isArray(data)) {
-                    setBranches(data);
-                } else {
-                    console.error('Invalid data format for branches:', data);
-                }
+                setBranches(data);
             } catch (error) {
                 console.error('Error fetching branches:', error);
             } finally {
@@ -61,196 +51,346 @@ const MenuManagement = () => {
         fetchBranches();
     }, []);
 
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewItemImage(reader.result.split(',')[1]); // Extract only the Base64 string
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleAddItem = async () => {
-        // Validate input
-        if (!newItemName || isNaN(newItemPrice) || Number(newItemPrice) <= 0 || !selectedBranch) {
-            alert('Please enter a valid item name, price (must be greater than 0), and select a branch.');
+        if (!newItemName || isNaN(newItemPrice) || Number(newItemPrice) <= 0 || !selectedBranch || !selectedCategory || !newItemImage) {
+            alert('Please fill all fields and upload an image.');
             return;
         }
-    
-        const newItemData = {
+
+        const payload = {
             name: newItemName,
-            price: Number(newItemPrice),
-            branch_name: selectedBranch, // Use branch_name instead of branch_id
+            price: newItemPrice,
+            branch_name: selectedBranch,
+            image: newItemImage, // Base64-encoded image
+            category: selectedCategory,
         };
-    
+
         try {
             const response = await fetch('http://localhost/addMenuItem.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newItemData),
+                body: JSON.stringify(payload),
             });
-    
-            if (!response.ok) {
-                const result = await response.json();
-                throw new Error(result.message || 'Failed to add menu item');
-            }
-    
+
             const result = await response.json();
             if (result.status === 'success') {
-                setMenuItems(prevItems => [...prevItems, { ...newItemData, id: menuItems.length + 1 }]);
+                alert('Item added successfully!');
                 setModalIsOpen(false);
-                setNewItemName('');
-                setNewItemPrice('');
-                setSelectedBranch('');
             } else {
-                alert(result.message);
+                alert(result.message || 'Error adding menu item.');
             }
         } catch (error) {
             console.error('Error adding menu item:', error);
-            alert('Error adding menu item: ' + error.message);
+            alert('Error adding menu item.');
         }
     };
-    
 
-        const chartData = {
-            labels: menuItems.map(item => item.name),
-            datasets: [
-                {
-                    label: 'Sales',
-                    data: menuItems.map(item => item.sales),
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    barThickness: 15,
-                },
-            ],
+
+    
+    const handleAddBranch = async () => {
+        if (!newBranchName || !newBranchAddress || !newBranchCity || !newBranchPhone) {
+            alert('Please fill in all the fields.');
+            return;
+        }
+    
+        const payload = {
+            name: newBranchName,
+            address: newBranchAddress,
+            city: newBranchCity,
+            phone_number: newBranchPhone,
         };
-
-        const chartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        font: {
-                            size: 10,
-                        },
-                    },
-                },
-                title: {
-                    display: true,
-                    text: 'Menu Item Sales',
-                    font: {
-                        size: 14,
-                    },
-                },
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        font: {
-                            size: 10,
-                        },
-                    },
-                },
-                y: {
-                    ticks: {
-                        font: {
-                            size: 10,
-                        },
-                    },
-                },
-            },
-        };
-
-        return (
-            <div className="p-6 bg-gray-50 min-h-screen">
-                <h2 className="text-2xl font-semibold mb-6">Manage Menu Items</h2>
     
-                <div style={{ height: '400px', width: '100%', marginBottom: '20px' }}>
-                    <Bar data={chartData} options={chartOptions} />
-                </div>
+        try {
+            const response = await fetch('http://localhost/addBranch.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
     
-                <button 
-                    onClick={() => setModalIsOpen(true)} 
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            const result = await response.json();
+            if (result.status === 'success') {
+                alert('Branch added successfully!');
+                setBranchModalIsOpen(false);
+                setBranches((prevBranches) => [
+                    ...prevBranches,
+                    { name: newBranchName, address: newBranchAddress, city: newBranchCity, phone_number: newBranchPhone },
+                ]); // Update the branches list
+            } else {
+                console.error('Error:', result.message); // Log the error message from PHP
+                alert(result.message || 'Error adding branch.');
+            }
+        } catch (error) {
+            console.error('Error adding branch:', error);
+            alert('Error adding branch.');
+        }
+    };
+
+    
+    const categorizedItems = {
+        Pizza: menuItems.filter(item => item.category === 'Pizza'),
+        Pasta: menuItems.filter(item => item.category === 'Pasta'),
+    };
+
+    return (
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <h2 className="text-2xl font-semibold mb-6">Manage Menu Items</h2>
+
+            <div className="mb-4">
+                <button
+                    onClick={() => setModalIsOpen(true)}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 mr-4"
                 >
                     Add New Item
                 </button>
-    
-                <Modal 
-                    isOpen={modalIsOpen} 
-                    onRequestClose={() => setModalIsOpen(false)} 
-                    contentLabel="Add New Menu Item"
-                    style={{
-                        content: {
-                            maxHeight: '450px',
-                            maxWidth: '400px',
-                            margin: 'auto',
-                            padding: '20px',
-                            borderRadius: '10px',
-                        },
-                    }}
+                <button
+                    onClick={() => setBranchModalIsOpen(true)}
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-700 transition duration-300"
                 >
-                    <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
-                    <div>
-                        <label className="block mb-2 font-medium">Item Name:</label>
-                        <input
-                            type="text"
-                            value={newItemName}
-                            onChange={(e) => setNewItemName(e.target.value)}
-                            className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
-                            placeholder="Enter item name"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 font-medium">Price:</label>
-                        <input
-                            type="number"
-                            value={newItemPrice}
-                            onChange={(e) => setNewItemPrice(e.target.value)}
-                            className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
-                            placeholder="Enter item price"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2 font-medium">Select Branch:</label>
-                        <select
-                            value={selectedBranch}
-                            onChange={(e) => setSelectedBranch(e.target.value)}
-                            className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
-                        >
-                            <option value="">Select a branch</option>
-                            {branches.map(branch => (
-                                <option key={branch.id} value={branch.id}>{branch.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <button 
-                        onClick={handleAddItem} 
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                    Add New Branch
+                </button>
+            </div>
+
+            {/* Modal for adding a new branch */}
+            <Modal
+                isOpen={branchModalIsOpen}
+                onRequestClose={() => setBranchModalIsOpen(false)}
+                contentLabel="Add New Branch"
+                style={{
+                    content: {
+                        maxHeight: '500px',
+                        maxWidth: '400px',
+                        margin: 'auto',
+                        padding: '20px',
+                        borderRadius: '10px',
+                    },
+                }}
+            >
+                <h2 className="text-xl font-semibold mb-4">Add New Branch</h2>
+                <div>
+                    <label className="block mb-2 font-medium">Branch Name:</label>
+                    <input
+                        type="text"
+                        value={newBranchName}
+                        onChange={(e) => setNewBranchName(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter branch name"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Address:</label>
+                    <input
+                        type="text"
+                        value={newBranchAddress}
+                        onChange={(e) => setNewBranchAddress(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter address"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">City:</label>
+                    <input
+                        type="text"
+                        value={newBranchCity}
+                        onChange={(e) => setNewBranchCity(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter city"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Phone Number:</label>
+                    <input
+                        type="text"
+                        value={newBranchPhone}
+                        onChange={(e) => setNewBranchPhone(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter phone number"
+                    />
+                </div>
+
+                <button
+                    onClick={handleAddBranch}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                >
+                    Add Branch
+                </button>
+                <button
+                    onClick={() => setBranchModalIsOpen(false)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg ml-2 hover:bg-red-700 transition duration-300"
+                >
+                    Cancel
+                </button>
+            </Modal>
+
+            {/* Modal for adding a new item */}
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                contentLabel="Add New Menu Item"
+                style={{
+                    content: {
+                        maxHeight: '500px',
+                        maxWidth: '400px',
+                        margin: 'auto',
+                        padding: '20px',
+                        borderRadius: '10px',
+                    },
+                }}
+            >
+                <h2 className="text-xl font-semibold mb-4">Add New Menu Item</h2>
+                <div>
+                    <label className="block mb-2 font-medium">Item Name:</label>
+                    <input
+                        type="text"
+                        value={newItemName}
+                        onChange={(e) => setNewItemName(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter item name"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Price:</label>
+                    <input
+                        type="number"
+                        value={newItemPrice}
+                        onChange={(e) => setNewItemPrice(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                        placeholder="Enter item price"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Category:</label>
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
                     >
-                        Add Item
-                    </button>
-                    <button 
-                        onClick={() => setModalIsOpen(false)} 
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg ml-2 hover:bg-red-700 transition duration-300"
+                        <option value="">Select a category</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Pasta">Pasta</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Select Branch:</label>
+                    <select
+                        value={selectedBranch}
+                        onChange={(e) => setSelectedBranch(e.target.value)}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
                     >
-                        Cancel
-                    </button>
-                </Modal>
-    
-                {loading ? (
-                    <p className="text-center text-gray-600">Loading...</p>
-                ) : (
-                    <div className="mt-6">
-                        <h3 className="text-lg font-semibold mb-4">Menu Items</h3>
+                        <option value="">Select a branch</option>
+                        {branches.map((branch) => (
+                            <option key={branch.id} value={branch.name}>
+                                {branch.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium">Upload Image:</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="border border-gray-300 px-2 py-1 mb-4 w-full rounded-lg"
+                    />
+                </div>
+
+                <button
+                    onClick={handleAddItem}
+                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                >
+                    Add Item
+                </button>
+                <button
+                    onClick={() => setModalIsOpen(false)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg ml-2 hover:bg-red-700 transition duration-300"
+                >
+                    Cancel
+                </button>
+            </Modal>
+
+            {loading ? (
+                <p className="text-center text-gray-600">Loading...</p>
+            ) : (
+                <div className="flex space-x-8 mt-6">
+                    <div className="w-1/2">
+                        <h3 className="text-lg font-semibold mb-4">
+                            Pizza ({categorizedItems.Pizza.length} items)
+                        </h3>
                         <ul className="space-y-2">
-                            {menuItems.map(item => (
-                                <li key={item.id} className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
-                                    <span className="font-medium">{item.name}</span>
-                                    <span className="text-gray-600">${typeof item.price === 'number' ? item.price.toFixed(2) : 'N/A'}</span>
+                            {categorizedItems.Pizza.map((item) => (
+                                <li
+                                    key={item.menu_id}
+                                    className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
+                                >
+                                    {item.image && (
+                                        <img
+                                            src={`data:image/jpeg;base64,${item.image}`}
+                                            alt={item.name}
+                                            className="w-16 h-16 rounded-lg object-cover"
+                                        />
+                                    )}
+                                    <div>
+                                        <span className="font-medium">{item.name}</span>
+                                        <span className="text-gray-600 block">
+                                            {`$${parseFloat(item.price).toFixed(2)}`}
+                                        </span>
+                                        <span className="text-gray-500 block">{item.category}</span>
+                                        <span className="text-gray-600 block">{item.branch_name}</span>
+                                    </div>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                )}
-            </div>
-        );
-    };
+                    <div className="w-1/2">
+                        <h3 className="text-lg font-semibold mb-4">
+                            Pasta ({categorizedItems.Pasta.length} items)
+                        </h3>
+                        <ul className="space-y-2">
+                            {categorizedItems.Pasta.map((item) => (
+                                <li
+                                    key={item.menu_id}
+                                    className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
+                                >
+                                    {item.image && (
+                                        <img
+                                            src={`data:image/jpeg;base64,${item.image}`}
+                                            alt={item.name}
+                                            className="w-16 h-16 rounded-lg object-cover"
+                                        />
+                                    )}
+                                    <div>
+                                        <span className="font-medium">{item.name}</span>
+                                        <span className="text-gray-600 block">
+                                            {`$${parseFloat(item.price).toFixed(2)}`}
+                                        </span>
+                                        <span className="text-gray-500 block">{item.category}</span>
+                                        <span className="text-gray-600 block">{item.branch_name}</span>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+
+            )}
+        </div>
+    );
+};
 
 export default MenuManagement;
+    

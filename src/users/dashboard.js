@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../main/header';
 import OrderD from '../users/ordersDash'; // Import your OrdersDash component
+import { firestore } from '../firebase/firebaseConfig'; // Import Firestore configuration
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
 
 function Dashboard() {
   const storedEmail = localStorage.getItem('userEmail');
@@ -8,11 +10,6 @@ function Dashboard() {
   const [previewImage, setPreviewImage] = useState(null);
   const [username, setUsername] = useState(null);
   const [error, setError] = useState(null);
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard'); // To switch between Dashboard, Settings, and Orders
 
   useEffect(() => {
@@ -46,16 +43,40 @@ function Dashboard() {
     }
   }, [storedEmail]);
 
+  // Handle image file selection
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
-      setPreviewImage(URL.createObjectURL(file));
+      setPreviewImage(URL.createObjectURL(file)); // Preview image
     }
   };
 
+  // Convert the image to Base64 and upload to Firestore
   const handleImageUpload = async () => {
-    console.log('Image uploaded', profileImage);
+    if (!profileImage) {
+      setError('Please select an image first.');
+      return;
+    }
+
+    // Convert the image to Base64
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64Image = reader.result.split(',')[1]; // Get Base64 part after the comma
+
+      try {
+        // Upload Base64 image to Firestore under the user's profile
+        const userRef = doc(firestore, 'users', storedEmail);
+        await setDoc(userRef, { profileImage: base64Image }, { merge: true });
+
+        setError(null); // Reset any previous error
+        alert('Profile image uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading image to Firestore:', error);
+        setError('Failed to upload image.');
+      }
+    };
+    reader.readAsDataURL(profileImage); // Read the file as Base64
   };
 
   return (
@@ -104,14 +125,7 @@ function Dashboard() {
             >
               Dashboard
             </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`py-2 px-4 w-full text-left rounded-lg shadow-lg ${
-                activeTab === 'settings' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
-            >
-              Settings
-            </button>
+            
             <button
               onClick={() => setActiveTab('orders')}
               className={`py-2 px-4 w-full text-left rounded-lg shadow-lg ${
@@ -126,63 +140,44 @@ function Dashboard() {
         {/* Main Content */}
         <div className="w-4/5 p-8">
           {activeTab === 'dashboard' && (
-            <div className="mb-6">
-              <h2 className="text-3xl font-bold text-center mb-6">Welcome to Your Dashboard</h2>
-              <p className="text-center">Here you can view your profile and account information.</p>
-            </div>
-          )}
-
-          {activeTab === 'settings' && (
-            <div className="settings-form max-w-lg mx-auto">
-              <h2 className="text-3xl font-bold text-center mb-6">Settings</h2>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700">First Name</label>
-                <input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700">Last Name</label>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700">Phone Number</label>
-                <input
-                  type="text"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg"
-                />
+            <div className="mb-6 bg-white shadow-lg rounded-lg p-6">
+              {/* Welcome Header */}
+              <div className="flex flex-col items-center mb-4">
+                <h2 className="text-4xl font-bold text-gray-800 mb-2">Welcome to Your Dashboard</h2>
+                <p className="text-lg text-gray-600">Here you can view and manage your profile and account information.</p>
               </div>
 
-              <div className="flex justify-center">
-                <button
-                  onClick={() => alert('Settings saved!')}
-                  className="bg-blue-600 text-white py-2 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300"
-                >
-                  Save Changes
-                </button>
+              {/* Information Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                {/* Card 1 */}
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-md p-6">
+                  <h3 className="text-xl font-bold mb-2">Profile Information</h3>
+                  <p className="text-sm">Update your profile details and preferences.</p>
+                  <button
+                    className="mt-4 bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100"
+                    onClick={handleImageUpload}
+                  >
+                    Upload Profile Image
+                  </button>
+                </div>
+
+                {/* Card 2 */}
+                <div className="bg-gradient-to-r from-green-400 to-teal-500 text-white rounded-lg shadow-md p-6">
+                  <h3 className="text-xl font-bold mb-2">Orders Overview</h3>
+                  <p className="text-sm">Check your order history and details.</p>
+                  <button className="mt-4 bg-white text-green-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100">
+                    View Orders
+                  </button>
+                </div>
+
+                {/* Card 3 */}  
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md p-6">
+                  <h3 className="text-xl font-bold mb-2">Statistics</h3>
+                  <p className="text-sm">View your performance and activity stats.</p>
+                  <button className="mt-4 bg-white text-purple-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100">
+                    View Stats
+                  </button>
+                </div>
               </div>
             </div>
           )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { auth } from '../firebase/firebaseConfig'; 
 import { useNavigate } from 'react-router-dom';
-import LoginModal from '../modal/LoginModal'; 
+import LoginModal from '../modal/LoginModal';
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +17,7 @@ const Header = () => {
       try {
         console.log('Stored email:', storedEmail);
 
-        const response = await fetch('https://sparklingwater1.helioho.st/getUser.php', {
+        const response = await fetch('http://localhost/getUser.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -65,16 +64,11 @@ const Header = () => {
     navigate('/dashboard');
   };
 
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      setUsername(null);
-      localStorage.removeItem('userEmail');
-      setDropdownOpen(false);
-      navigate('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    setUsername(null);
+    setDropdownOpen(false);
+    navigate('/');
   };
 
   useEffect(() => {

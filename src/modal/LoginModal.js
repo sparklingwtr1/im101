@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
-
-
 const FlipCardModal = ({ isOpen, onClose }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [email, setEmail] = useState('');
@@ -12,13 +9,10 @@ const FlipCardModal = ({ isOpen, onClose }) => {
   const [fname, setFname] = useState('');
   const [lname, setLname] = useState('');
   const [phone_number, setPhone] = useState('');
+  const [address, setAddress] = useState(''); // Added state for address
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-
-
-
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('customerEmail');
@@ -31,18 +25,16 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     localStorage.setItem('userEmail', userEmail);
   };
 
-  
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     // Default admin credentials
-    const adminEmail = 'kelvin@pos.nene';
+    const adminEmail = 'kelvin@zorbox.cafe';
     const adminPassword = 'admin123'; // You can change this to a more secure password
-  
+
     // Check if the email contains the admin domain
-    if (email.endsWith('@pos.nene')) {
+    if (email.endsWith('@zorbox.cafe')) {
       if (email === adminEmail && password === adminPassword) {
         // Navigate to admin dashboard
         navigate('/admin'); // Replace with your admin dashboard route
@@ -62,7 +54,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           },
           body: JSON.stringify({ email, password }),
         });
-  
+
         const data = await response.json();
         if (data.message === 'Login successful') {
           saveEmailToLocalStorage(data.email);
@@ -70,7 +62,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           const totalAmount = localStorage.getItem('totalAmount') || 0;
           navigate('/dashboard', { state: { orderItems, totalAmount } });
           onClose();
-        } else {  
+        } else {
           setError(data.message);
         }
       } catch (error) {
@@ -81,17 +73,16 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     }
   };
 
-  
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
-  
+
     if (!phone_number || isNaN(phone_number)) {
       setError("Please provide a valid phone number.");
       setLoading(false);
       return;
     }
-  
+
     try {
       const response = await fetch('http://localhost/register.php', {
         method: 'POST',
@@ -105,9 +96,9 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           phone_number,
           fname,
           lname,
+          address, // Pass the address to the API
         }),
       });
-  
 
       const data = await response.json();
       console.log(data); // Log response for debugging
@@ -124,8 +115,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
-};
-
+  };
 
   return (
     <>
@@ -134,53 +124,50 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           <div className="absolute inset-0 bg-black opacity-50" onClick={onClose}></div>
           <div
             className="flip-card bg-white p-8 rounded-lg shadow-lg z-10 w-full max-w-lg"
-            style={{ height: '500px', width: '420px' }} // Adjusted height
+            style={{ height: '600px', width: '420px' }} // Adjusted height
           >
             <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
               <div className="flip-card-front">
-                <h1 className="text-2xl font-bold mb-2 text-center">Log In</h1>
+                <h1 className="text-2xl font-bold mt-28 text-center">Log In</h1>
 
-                <form onSubmit={handleLogin} className="flex flex-col items-center w-full">
-                  <div className="mb-6 w-full">
-                    <label htmlFor="email" className="block text-gray-700">
-                      Email:
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full p-3 border rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
-                  <div className="mb-6 w-full">
-                    <label htmlFor="password" className="block text-gray-700">
-                      Password:
-                    </label>
-                    <input
-                      type="password"
-                      id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full p-3 border rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required
-                    />
-                  </div>
+                <form onSubmit={handleLogin} className="flex flex-col items-center justify-center w-full space-y-6 ">
+                      <div className="w-full">
+                        <label htmlFor="email" className="block text-gray-700">Email:</label>
+                        <input
+                          type="email"
+                          id="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full p-3 border rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
+                      <div className="w-full">
+                        <label htmlFor="password" className="block text-gray-700">Password:</label>
+                        <input
+                          type="password"
+                          id="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full p-3 border rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          required
+                        />
+                      </div>
 
-                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                      {error && <p className="text-red-500 text-sm">{error}</p>}
 
-                  {loading ? (
-                    <div className="spinner"></div>
-                  ) : (
-                    <button
-                      type="submit"
-                      className="w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600"
-                    >
-                      Log In
-                    </button>
-                  )}
-                </form>
+                      {loading ? (
+                        <div className="spinner"></div>
+                      ) : (
+                        <button
+                          type="submit"
+                          className="w-full bg-green-500 text-white font-bold py-2 rounded-lg hover:bg-green-600 transition duration-200"
+                        >
+                          Log In
+                        </button>
+                      )}
+                    </form>
+
 
                 <div className="text-center mt-6">
                   <p className="text-gray-500">
@@ -261,6 +248,18 @@ const FlipCardModal = ({ isOpen, onClose }) => {
                     </div>
 
                     <div>
+                      <label htmlFor="address" className="block text-gray-700">Address:</label> {/* Address input */}
+                      <input
+                        type="text"
+                        id="address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full p-3 border rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
                       <label htmlFor="signup-password" className="block text-gray-700">Password:</label>
                       <input
                         type="password"
@@ -303,60 +302,58 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           </div>
         </div>
       )}
-      <style jsx>{
-        `
-          .flip-card {
-            width: 100%; 
-            max-width: 600px; 
-            height: 60%; /* Reduced the height */
-            position: relative;
-            perspective: 1000px;
-            overflow: hidden; 
-            margin: 0 auto;
+      <style jsx>{`
+        .flip-card {
+          width: 100%;
+          max-width: 600px;
+          height: 60%;
+          position: relative;
+          perspective: 1000px;
+          overflow: hidden;
+          margin: 0 auto;
+        }
+
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          height: 50%;
+          transform-style: preserve-3d;
+          transition: transform 0.6s;
+        }
+
+        .flip-card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 50%;
+          backface-visibility: hidden;
+        }
+
+        .flip-card-back {
+          transform: rotateY(180deg);
+        }
+
+        /* Spinner Styles */
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          border-left-color: #007bff;
+          border-radius: 50%;
+          width: 24px;
+          height: 24px;
+          margin: 0 auto;
+          animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
           }
-      
-          .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 50%;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-          }
-      
-          .flip-card-inner.flipped {
-            transform: rotateY(180deg);
-          }
-      
-          .flip-card-front,
-          .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 50%;
-            backface-visibility: hidden;
-          }
-      
-          .flip-card-back {
-            transform: rotateY(180deg);
-          }
-      
-          /* Spinner Styles */
-          .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #007bff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            margin: 0 auto;
-            animation: spin 1s ease infinite;
-          }
-      
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        `
-      }</style> 
+        }
+      `}</style>
     </>
   );
 };

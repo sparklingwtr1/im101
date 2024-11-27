@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Customers from './main/customers';
+
 import Menu from './main/menu';
 import Billing from './main/billing';
 import Payment from './main/payment';
@@ -25,7 +25,7 @@ function App() {
       <div>
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path="/customers" element={<Customers />} />
+
           <Route path="/menu" element={<Menu />} />
           <Route path="/billing" element={<Billing />} /> 
           <Route path="/payment" element={<Payment />} />

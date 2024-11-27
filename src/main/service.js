@@ -51,8 +51,8 @@ const ServicePage = () => {
             <section className="bg-gray-50 p-8 rounded-lg my-12">
                 <h2 className="text-3xl font-semibold text-gray-800 mb-4">Contact Us for Catering</h2>
                 <p className="text-lg text-gray-700 mb-2">For inquiries about our catering service, reach out to us at:</p>
-                <p className="text-lg text-gray-700">Email: <a href="mailto:catering@yourrestaurant.com" className="text-blue-500">catering@yourrestaurant.com</a></p>
-                <p className="text-lg text-gray-700">Phone: <a href="tel:+1234567890" className="text-blue-500">(123) 456-7890</a></p>
+                <p className="text-lg text-gray-700">Email: <a href="mailto:zorboxcafeandrestobar2018@gmail.com" className="text-blue-500">zorboxcafeandrestobar2018@gmail.com</a></p>
+                <p className="text-lg text-gray-700">Phone: <a href="tel:+63 948 117 6541" className="text-blue-500">+63 948 117 6541</a></p>
             </section>
         </div>
     </>
