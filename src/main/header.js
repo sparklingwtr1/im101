@@ -18,7 +18,7 @@ const Header = () => {
       try {
         console.log('Stored email:', storedEmail);
 
-        const response = await fetch('http://sparklingwater1.helioho.st/getUser.php', {
+        const response = await fetch('http://localhost/getUser.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

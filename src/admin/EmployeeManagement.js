@@ -12,28 +12,13 @@ const EmployeeManagement = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [branches, setBranches] = useState([]); // State for storing branches
-  const [totalEmployees, setTotalEmployees] = useState(0); // State for storing total employees
 
   // Fetch branches when the component mounts
   useEffect(() => {
-    fetch('http://sparklingwater1.helioho.st/getBranches.php')
+    fetch('http://localhost/getBranches.php')
       .then((response) => response.json())
       .then((data) => setBranches(data))
       .catch((error) => console.error('Error fetching branches:', error));
-  }, []);
-
-  // Fetch total number of employees when the component mounts
-  useEffect(() => {
-    fetch('http://sparklingwater1.helioho.st/getEmployeeCount.php')
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.total_employees) {
-          setTotalEmployees(data.total_employees);
-        } else {
-          console.error('Error fetching employee count:', data.error);
-        }
-      })
-      .catch((error) => console.error('Error fetching employee count:', error));
   }, []);
 
   // Handle input changes
@@ -59,7 +44,7 @@ const EmployeeManagement = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://sparklingwater1.helioho.st/createEmployee.php', {
+      const response = await fetch('http://localhost/createEmployee.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,17 +75,6 @@ const EmployeeManagement = () => {
           password: '',
           branch_name: '', // Reset branch selection
         });
-        // After successful employee creation, fetch the updated total employee count
-        fetch('http://sparklingwater1.helioho.st/getEmployeeCount.php')
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.total_employees) {
-              setTotalEmployees(data.total_employees);
-            } else {
-              console.error('Error fetching employee count:', data.error);
-            }
-          })
-          .catch((error) => console.error('Error fetching employee count:', error));
       } else {
         setErrorMessage(data.message);
       }
@@ -112,9 +86,6 @@ const EmployeeManagement = () => {
   return (
     <div>
       <h2 className="text-2xl mb-4">Employee Management</h2>
-
-      {/* Display total number of employees */}
-      <p className="mb-4">Total Employees: {totalEmployees}</p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

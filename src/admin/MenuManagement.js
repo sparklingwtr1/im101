@@ -24,7 +24,7 @@ const MenuManagement = () => {
         const fetchMenuItems = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://sparklingwater1.helioho.st/getMenuItems.php');
+                const response = await fetch('http://localhost/getMenuItems.php');
                 const data = await response.json();
                 setMenuItems(data);
             } catch (error) {
@@ -37,7 +37,7 @@ const MenuManagement = () => {
         const fetchBranches = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://sparklingwater1.helioho.st/getBranches.php');
+                const response = await fetch('http://localhost/getBranches.php');
                 const data = await response.json();
                 setBranches(data);
             } catch (error) {
@@ -77,7 +77,7 @@ const MenuManagement = () => {
         };
 
         try {
-            const response = await fetch('http://sparklingwater1.helioho.st/addMenuItem.php', {
+            const response = await fetch('http://localhost/addMenuItem.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ const MenuManagement = () => {
         };
     
         try {
-            const response = await fetch('http://sparklingwater1.helioho.st/addBranch.php', {
+            const response = await fetch('http://localhost/addBranch.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -327,65 +327,65 @@ const MenuManagement = () => {
                 <p className="text-center text-gray-600">Loading...</p>
             ) : (
                 <div className="flex space-x-8 mt-6">
-                    <div className="w-1/2">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Pizza ({categorizedItems.Pizza.length} items)
-                        </h3>
-                        <ul className="space-y-2">
-                            {categorizedItems.Pizza.map((item) => (
-                                <li
-                                    key={item.menu_id}
-                                    className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
-                                >
-                                    {item.image && (
-                                        <img
-                                            src={`data:image/jpeg;base64,${item.image}`}
-                                            alt={item.name}
-                                            className="w-16 h-16 rounded-lg object-cover"
-                                        />
-                                    )}
-                                    <div>
-                                        <span className="font-medium">{item.name}</span>
-                                        <span className="text-gray-600 block">
-                                            {`$${parseFloat(item.price).toFixed(2)}`}
-                                        </span>
-                                        <span className="text-gray-500 block">{item.category}</span>
-                                        <span className="text-gray-600 block">{item.branch_name}</span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                    <div className="w-1/2">
-                        <h3 className="text-lg font-semibold mb-4">
-                            Pasta ({categorizedItems.Pasta.length} items)
-                        </h3>
-                        <ul className="space-y-2">
-                            {categorizedItems.Pasta.map((item) => (
-                                <li
-                                    key={item.menu_id}
-                                    className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
-                                >
-                                    {item.image && (
-                                        <img
-                                            src={`data:image/jpeg;base64,${item.image}`}
-                                            alt={item.name}
-                                            className="w-16 h-16 rounded-lg object-cover"
-                                        />
-                                    )}
-                                    <div>
-                                        <span className="font-medium">{item.name}</span>
-                                        <span className="text-gray-600 block">
-                                            {`$${parseFloat(item.price).toFixed(2)}`}
-                                        </span>
-                                        <span className="text-gray-500 block">{item.category}</span>
-                                        <span className="text-gray-600 block">{item.branch_name}</span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                <div className="w-1/2">
+                    <h3 className="text-lg font-semibold mb-4">
+                        Pizza ({categorizedItems.Pizza.length} items)
+                    </h3>
+                    <ul className="space-y-2">
+                        {categorizedItems.Pizza.map((item) => (
+                            <li
+                                key={item.menu_id}
+                                className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
+                            >
+                                {item.image && (
+                                    <img
+                                        src={`data:image/jpeg;base64,${item.image}`}
+                                        alt={item.name}
+                                        className="w-16 h-16 rounded-lg object-cover"
+                                    />
+                                )}
+                                <div>
+                                    <span className="font-medium">{item.name}</span>
+                                    <span className="text-gray-600 block">
+                                        {`$${parseFloat(item.price).toFixed(2)}`}
+                                    </span>
+                                    <span className="text-gray-500 block">{item.category}</span>
+                                    <span className="text-gray-600 block">{item.branch_name}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
+                <div className="w-1/2">
+                    <h3 className="text-lg font-semibold mb-4">
+                        Pasta ({categorizedItems.Pasta.length} items)
+                    </h3>
+                    <ul className="space-y-2">
+                        {categorizedItems.Pasta.map((item) => (
+                            <li
+                                key={item.menu_id}
+                                className="border border-gray-300 bg-white p-4 rounded-lg shadow-md flex items-center space-x-4"
+                            >
+                                {item.image && (
+                                    <img
+                                        src={`data:image/jpeg;base64,${item.image}`}
+                                        alt={item.name}
+                                        className="w-16 h-16 rounded-lg object-cover"
+                                    />
+                                )}
+                                <div>
+                                    <span className="font-medium">{item.name}</span>
+                                    <span className="text-gray-600 block">
+                                        {`$${parseFloat(item.price).toFixed(2)}`}
+                                    </span>
+                                    <span className="text-gray-500 block">{item.category}</span>
+                                    <span className="text-gray-600 block">{item.branch_name}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
 
             )}
         </div>

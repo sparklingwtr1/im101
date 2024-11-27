@@ -15,7 +15,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://sparklingwater1.helioho.st/getUser.php', {
+        const response = await fetch('http://localhost/getUser.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: storedEmail }), // Send stored email to API

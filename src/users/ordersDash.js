@@ -18,7 +18,7 @@ const OrdersDash = () => {
         throw new Error('No email found in local storage');
       }
 
-      const response = await fetch('http://sparklingwater1.helioho.st/getOrders.php', {
+      const response = await fetch('http://localhost/getOrders.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

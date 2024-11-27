@@ -11,7 +11,7 @@ function Menu() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await fetch('http://sparklingwater1.helioho.st/getMenuItems.php');
+      const response = await fetch('http://localhost/getMenuItems.php');
       const data = await response.json();
       setMenuItems(data);
     } catch (error) {
