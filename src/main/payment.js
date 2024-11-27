@@ -94,7 +94,7 @@ function Payment() {
 
       // Send payment data to the backend API
       try {
-        const response = await fetch('http://localhost/payment.php', {
+        const response = await fetch('http://sparklingwater1.helioho.st/payment.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

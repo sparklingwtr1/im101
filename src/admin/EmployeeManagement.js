@@ -16,7 +16,7 @@ const EmployeeManagement = () => {
 
   // Fetch branches when the component mounts
   useEffect(() => {
-    fetch('http://localhost/getBranches.php')
+    fetch('http://sparklingwater1.helioho.st/getBranches.php')
       .then((response) => response.json())
       .then((data) => setBranches(data))
       .catch((error) => console.error('Error fetching branches:', error));
@@ -24,7 +24,7 @@ const EmployeeManagement = () => {
 
   // Fetch total number of employees when the component mounts
   useEffect(() => {
-    fetch('http://localhost/getEmployeeCount.php')
+    fetch('http://sparklingwater1.helioho.st/getEmployeeCount.php')
       .then((response) => response.json())
       .then((data) => {
         if (data.total_employees) {
@@ -59,7 +59,7 @@ const EmployeeManagement = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost/createEmployee.php', {
+      const response = await fetch('http://sparklingwater1.helioho.st/createEmployee.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ const EmployeeManagement = () => {
           branch_name: '', // Reset branch selection
         });
         // After successful employee creation, fetch the updated total employee count
-        fetch('http://localhost/getEmployeeCount.php')
+        fetch('http://sparklingwater1.helioho.st/getEmployeeCount.php')
           .then((response) => response.json())
           .then((data) => {
             if (data.total_employees) {

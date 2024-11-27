@@ -24,7 +24,7 @@ const MenuManagement = () => {
         const fetchMenuItems = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost/getMenuItems.php');
+                const response = await fetch('http://sparklingwater1.helioho.st/getMenuItems.php');
                 const data = await response.json();
                 setMenuItems(data);
             } catch (error) {
@@ -37,7 +37,7 @@ const MenuManagement = () => {
         const fetchBranches = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost/getBranches.php');
+                const response = await fetch('http://sparklingwater1.helioho.st/getBranches.php');
                 const data = await response.json();
                 setBranches(data);
             } catch (error) {
@@ -77,7 +77,7 @@ const MenuManagement = () => {
         };
 
         try {
-            const response = await fetch('http://localhost/addMenuItem.php', {
+            const response = await fetch('http://sparklingwater1.helioho.st/addMenuItem.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ const MenuManagement = () => {
         };
     
         try {
-            const response = await fetch('http://localhost/addBranch.php', {
+            const response = await fetch('http://sparklingwater1.helioho.st/addBranch.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
