@@ -26,7 +26,7 @@ const EmployeeManagement = () => {
   useEffect(() => {
     const fetchEmployeeCount = async () => {
       try {
-        const response = await fetch('https://sparklingwater1.helioho.st/getTotalEmployees.php');
+        const response = await fetch('https://sparklingwater1.helioho.st/getEmployeeCount.php');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
