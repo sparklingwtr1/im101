@@ -15,7 +15,7 @@ const EmployeeManagement = () => {
 
   // Fetch branches when the component mounts
   useEffect(() => {
-    fetch('http://localhost/getBranches.php')
+    fetch('https://sparklingwater1.helioho.st/getBranches.php')
       .then((response) => response.json())
       .then((data) => setBranches(data))
       .catch((error) => console.error('Error fetching branches:', error));
@@ -44,7 +44,7 @@ const EmployeeManagement = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost/createEmployee.php', {
+      const response = await fetch('https://sparklingwater1.helioho.st/createEmployee.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

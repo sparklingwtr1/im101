@@ -14,7 +14,7 @@ const EmployeeLoginPage = () => {
     setError(null);
   
     try {
-      const response = await fetch('http://localhost/admin.php', {
+      const response = await fetch('https://sparklingwater1.helioho.st/admin.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employeeId, password })

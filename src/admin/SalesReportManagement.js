@@ -9,12 +9,12 @@ const SalesReportManagement = () => {
 
   useEffect(() => {
     // Fetch sales data from the API
-    axios.get('http://localhost/get_sales_report.php')
+    axios.get('https://sparklingwater1.helioho.st/get_sales_report.php')
       .then(response => setSalesData(response.data))
       .catch(error => console.error("There was an error fetching sales data:", error));
 
     // Fetch the best-selling item from the API
-    axios.get('http://localhost/getBestSellingItem.php')
+    axios.get('https://sparklingwater1.helioho.st/getBestSellingItem.php')
       .then(response => setBestSellingItem(response.data.best_selling_item))
       .catch(error => console.error("There was an error fetching the best-selling item:", error));
   }, []);

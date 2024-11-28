@@ -47,7 +47,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     } else {
       // Proceed with normal user login
       try {
-        const response = await fetch('http://localhost/login.php', {
+        const response = await fetch('https://sparklingwater1.helioho.st/login.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     }
 
     try {
-      const response = await fetch('http://localhost/register.php', {
+      const response = await fetch('https://sparklingwater1.helioho.st/register.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

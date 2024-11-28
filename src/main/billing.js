@@ -24,7 +24,7 @@ const Billing = () => {
   const fetchUserData = useCallback(async () => {
     if (storedEmail) {
       try {
-        const response = await fetch('http://localhost/getUserDetails.php', {
+        const response = await fetch('https://sparklingwater1.helioho.st/getUserDetails.php', {
           method: 'POST',
           headers: {  
             'Content-Type': 'application/json',

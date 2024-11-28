@@ -5,7 +5,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost/getAdminOrders.php') // Adjust this URL as needed
+    fetch('https://sparklingwater1.helioho.st/getAdminOrders.php') // Adjust this URL as needed
       .then((response) => response.json())
       .then((data) => setOrders(data))
       .catch((error) => console.error('Error fetching orders:', error));

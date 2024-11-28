@@ -7,13 +7,13 @@ const OrderManagement = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost/getAdminOrders.php')
+    axios.get('https://sparklingwater1.helioho.st/getAdminOrders.php')
       .then(response => setOrders(response.data))
       .catch(error => console.error("There was an error fetching orders:", error));
   }, []);
 
   const updateStatus = (orderId, newStatus) => {
-    axios.post('http://localhost/update_status.php', {
+    axios.post('https://sparklingwater1.helioho.st/update_status.php', {
       order_id: orderId,
       status: newStatus,
     })
