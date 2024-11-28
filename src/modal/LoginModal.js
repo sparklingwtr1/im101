@@ -129,7 +129,7 @@ const FlipCardModal = ({ isOpen, onClose }) => {
           onClick={onClose}></div>
           <div
             className="flip-card bg-white p-8 rounded-lg shadow-lg z-10 w-full max-w-lg "
-            style={{ height: '570px', width: '400px' }} // Adjusted height
+            style={{ height: '565px', width: '350px' }} // Adjusted height
           >
             <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
               <div className="flip-card-front">
