@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../image/zorbox-removebg.png';
+
+
+
 
 const FlipCardModal = ({ isOpen, onClose }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -121,14 +125,23 @@ const FlipCardModal = ({ isOpen, onClose }) => {
     <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black opacity-50" onClick={onClose}></div>
+          <div className="absolute inset-0 bg-black opacity-50" 
+          onClick={onClose}></div>
           <div
-            className="flip-card bg-white p-8 rounded-lg shadow-lg z-10 w-full max-w-lg"
-            style={{ height: '600px', width: '420px' }} // Adjusted height
+            className="flip-card bg-white p-8 rounded-lg shadow-lg z-10 w-full max-w-lg "
+            style={{ height: '570px', width: '400px' }} // Adjusted height
           >
             <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
               <div className="flip-card-front">
-                <h1 className="text-2xl font-bold mt-28 text-center">Log In</h1>
+                {/* Logo Section */}
+                <div className="flex justify-center mb-6">
+                  <img
+                    src={Logo} // Replace with your logo URL
+                    alt="Logo"
+                    className="w-[150px] h-[150px] object-cover"
+                  />
+                </div>
+                <h1 className="text-2xl font-bold text-center">Log In</h1>
 
                 <form onSubmit={handleLogin} className="flex flex-col items-center justify-center w-full space-y-6 ">
                       <div className="w-full">

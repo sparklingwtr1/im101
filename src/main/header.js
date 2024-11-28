@@ -91,7 +91,7 @@ const Header = () => {
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="text-2xl font-bold">
             <a href="/">
-              <img src={logo} alt="Logo" className="h-10" />
+              <img src={logo} alt="Logo" className="w-[100px]" />
             </a>
           </div>
           <nav>
