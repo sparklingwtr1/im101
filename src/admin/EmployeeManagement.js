@@ -12,6 +12,7 @@ const EmployeeManagement = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [branches, setBranches] = useState([]); // State for storing branches
+  const [totalEmployees, setTotalEmployees] = useState(0); // State for total employees
 
   // Fetch branches when the component mounts
   useEffect(() => {
@@ -19,6 +20,26 @@ const EmployeeManagement = () => {
       .then((response) => response.json())
       .then((data) => setBranches(data))
       .catch((error) => console.error('Error fetching branches:', error));
+  }, []);
+
+  // Fetch total employee count
+  useEffect(() => {
+    const fetchEmployeeCount = async () => {
+      try {
+        const response = await fetch('https://sparklingwater1.helioho.st/getTotalEmployees.php');
+        const data = await response.json();
+        if (data.total_employees !== undefined) {
+          setTotalEmployees(data.total_employees);
+        } else {
+          setErrorMessage(data.error || 'Failed to fetch employee count');
+        }
+      } catch (error) {
+        console.error('Error fetching employee count:', error);
+        setErrorMessage('Error fetching employee count');
+      }
+    };
+
+    fetchEmployeeCount();
   }, []);
 
   // Handle input changes
@@ -75,6 +96,7 @@ const EmployeeManagement = () => {
           password: '',
           branch_name: '', // Reset branch selection
         });
+        setTotalEmployees((prevCount) => prevCount + 1); // Increment total employee count
       } else {
         setErrorMessage(data.message);
       }
@@ -86,6 +108,11 @@ const EmployeeManagement = () => {
   return (
     <div>
       <h2 className="text-2xl mb-4">Employee Management</h2>
+
+      {/* Display Total Employees */}
+      <div className="mb-4">
+        <p className="text-lg font-bold">Total Employees: {totalEmployees}</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
