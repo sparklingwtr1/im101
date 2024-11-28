@@ -27,15 +27,18 @@ const EmployeeManagement = () => {
     const fetchEmployeeCount = async () => {
       try {
         const response = await fetch('https://sparklingwater1.helioho.st/getTotalEmployees.php');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
         if (data.total_employees !== undefined) {
           setTotalEmployees(data.total_employees);
         } else {
-          setErrorMessage(data.error || 'Failed to fetch employee count');
+          throw new Error(data.error || 'Failed to fetch employee count');
         }
       } catch (error) {
         console.error('Error fetching employee count:', error);
-        setErrorMessage('Error fetching employee count');
+        setErrorMessage(error.message || 'Error fetching employee count');
       }
     };
 
