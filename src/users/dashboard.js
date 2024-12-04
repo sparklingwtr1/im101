@@ -82,17 +82,15 @@ function Dashboard() {
   return (
     <>
       <Header />
-      <div className="dashboard-container flex h-screen w-full bg-gradient-to-r from-blue-100 to-blue-200 shadow-lg rounded-lg">
-        
+      <div className="dashboard-container flex flex-col md:flex-row h-screen w-full bg-gradient-to-r from-blue-100 to-blue-200">
         {/* Sidebar */}
-        <div className="w-1/5 flex flex-col items-center space-y-6 p-4 bg-white shadow-lg rounded-lg">
-          
+        <div className="w-full md:w-1/5 flex flex-col items-center space-y-6 p-4 bg-white shadow-lg md:rounded-lg">
           {/* Profile Image */}
           <div className="relative">
             <img
               src={previewImage || 'https://via.placeholder.com/150'}
               alt="Profile"
-              className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-md"
+              className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-blue-500 shadow-md"
             />
             <input
               type="file"
@@ -106,29 +104,29 @@ function Dashboard() {
           <div className="text-center">
             {storedEmail ? (
               <div>
-                <p className="text-lg font-bold">Email: {storedEmail}</p>
-                <p className="text-lg font-bold">Username: {username || 'Loading...'}</p>
+                <p className="text-sm md:text-lg font-bold">Email: {storedEmail}</p>
+                <p className="text-sm md:text-lg font-bold">Username: {username || 'Loading...'}</p>
               </div>
             ) : (
-              <p className="text-lg">No user is logged in</p>
+              <p className="text-sm md:text-lg">No user is logged in</p>
             )}
             {error && <p className="text-red-500">{error}</p>}
           </div>
 
           {/* Sidebar Buttons */}
-          <div className="flex flex-col space-y-4 w-full">
+          <div className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-4 w-full">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`py-2 px-4 w-full text-left rounded-lg shadow-lg ${
+              className={`py-2 px-4 text-center rounded-lg shadow-lg ${
                 activeTab === 'dashboard' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
               }`}
             >
               Dashboard
             </button>
-            
+
             <button
               onClick={() => setActiveTab('orders')}
-              className={`py-2 px-4 w-full text-left rounded-lg shadow-lg ${
+              className={`py-2 px-4 text-center rounded-lg shadow-lg ${
                 activeTab === 'orders' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
               }`}
             >
@@ -138,20 +136,20 @@ function Dashboard() {
         </div>
 
         {/* Main Content */}
-        <div className="w-4/5 p-8">
+        <div className="w-full md:w-4/5 p-4 md:p-8">
           {activeTab === 'dashboard' && (
-            <div className="mb-6 bg-white shadow-lg rounded-lg p-6">
+            <div className="mb-6 bg-white shadow-lg rounded-lg p-4 md:p-6">
               {/* Welcome Header */}
               <div className="flex flex-col items-center mb-4">
-                <h2 className="text-4xl font-bold text-gray-800 mb-2">Welcome to Your Dashboard</h2>
-                <p className="text-lg text-gray-600">Here you can view and manage your profile and account information.</p>
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2">Welcome to Your Dashboard</h2>
+                <p className="text-sm md:text-lg text-gray-600">View and manage your profile and account information.</p>
               </div>
 
               {/* Information Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-4">
                 {/* Card 1 */}
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-md p-6">
-                  <h3 className="text-xl font-bold mb-2">Profile Information</h3>
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg shadow-md p-4 md:p-6">
+                  <h3 className="text-lg md:text-xl font-bold mb-2">Profile Information</h3>
                   <p className="text-sm">Update your profile details and preferences.</p>
                   <button
                     className="mt-4 bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100"
@@ -162,17 +160,17 @@ function Dashboard() {
                 </div>
 
                 {/* Card 2 */}
-                <div className="bg-gradient-to-r from-green-400 to-teal-500 text-white rounded-lg shadow-md p-6">
-                  <h3 className="text-xl font-bold mb-2">Orders Overview</h3>
+                <div className="bg-gradient-to-r from-green-400 to-teal-500 text-white rounded-lg shadow-md p-4 md:p-6">
+                  <h3 className="text-lg md:text-xl font-bold mb-2">Orders Overview</h3>
                   <p className="text-sm">Check your order history and details.</p>
                   <button className="mt-4 bg-white text-green-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100">
                     View Orders
                   </button>
                 </div>
 
-                {/* Card 3 */}  
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md p-6">
-                  <h3 className="text-xl font-bold mb-2">Statistics</h3>
+                {/* Card 3 */}
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-md p-4 md:p-6">
+                  <h3 className="text-lg md:text-xl font-bold mb-2">Statistics</h3>
                   <p className="text-sm">View your performance and activity stats.</p>
                   <button className="mt-4 bg-white text-purple-600 font-semibold py-2 px-4 rounded-lg shadow hover:bg-gray-100">
                     View Stats

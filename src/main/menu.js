@@ -75,29 +75,29 @@ function Menu() {
   return (
     <>
       <Header onClick={toggleSidebar} />
-      <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
         {Object.keys(groupedMenuItems).map((category) => (
           <div key={category} className="mb-10">
-            <h2 className="text-3xl font-bold text-gray-700 mb-6 border-b-2 border-blue-500 pb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-700 mb-4 sm:mb-6 border-b-2 border-blue-500 pb-2">
               {category}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {groupedMenuItems[category].map((menuItem) => (
                 <div
                   key={menuItem.menu_id}
-                  className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl hover:scale-105 hover:rotate-2 transform transition-all duration-300 ease-in-out opacity-90 hover:opacity-100 z-10"
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm"
                 >
                   <img
                     src={`data:image/jpeg;base64,${menuItem.image}`}
                     alt={menuItem.name}
-                    className="h-48 w-full object-cover transition-opacity duration-300 ease-in-out opacity-100"
+                    className="h-36 sm:h-48 w-full object-cover"
                   />
-                  <div className="p-5">
-                    <h3 className="font-semibold text-lg text-gray-800">{menuItem.name}</h3>
-                    <p className="text-gray-600 text-sm mt-1">₱{menuItem.price}</p>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-base sm:text-lg text-gray-800">{menuItem.name}</h3>
+                    <p className="text-gray-600 text-sm mt-2">₱{menuItem.price}</p>
                     <button
                       onClick={() => addToOrder(menuItem)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 mt-4 rounded-md w-full transition duration-300"
+                      className="mt-4 w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 text-sm sm:text-base"
                     >
                       Add to Order
                     </button>
@@ -110,12 +110,12 @@ function Menu() {
       </div>
 
       <button
-        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition duration-300 z-50"
+        className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white px-4 sm:px-5 py-3 rounded-full shadow-lg transition duration-300 z-50 flex items-center gap-2"
         onClick={toggleSidebar}
       >
-        View Orders
+        <span className="text-sm sm:text-base">View Orders</span>
         {getTotalQuantity() > 0 && (
-          <span className="absolute top-[-5px] right-[-5px] bg-red-500 text-white text-sm rounded-full px-2">
+          <span className="bg-red-500 text-white text-xs sm:text-sm rounded-full px-2 py-1">
             {getTotalQuantity()}
           </span>
         )}
@@ -132,11 +132,13 @@ function Menu() {
 
       {showPrompt && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg text-center shadow-lg">
-            <p className="mb-4 text-gray-700">Cannot add to order. Please log-in first.</p>
+          <div className="bg-white p-4 sm:p-6 rounded-lg text-center shadow-lg w-4/5 sm:w-1/3">
+            <p className="mb-4 text-gray-700 text-sm sm:text-base">
+              Cannot add to order. Please log in first.
+            </p>
             <button
               onClick={closePrompt}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-300"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition duration-300 text-sm sm:text-base"
             >
               Close
             </button>

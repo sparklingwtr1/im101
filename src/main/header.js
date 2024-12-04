@@ -5,13 +5,14 @@ import LoginModal from '../modal/LoginModal';
 
 const Header = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [username, setUsername] = useState(null); 
-  const [dropdownOpen, setDropdownOpen] = useState(false); 
-  const [error, setError] = useState(null); 
+  const [username, setUsername] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);  // Added loading state
   const navigate = useNavigate();
 
   // Retrieve email from local storage
-  const storedEmail = localStorage.getItem('userEmail'); 
+  const storedEmail = localStorage.getItem('userEmail');
 
   const fetchUsernameFromBackend = useCallback(async () => {
     if (storedEmail) {
@@ -65,11 +66,21 @@ const Header = () => {
     navigate('/dashboard');
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('userEmail');
-    setUsername(null);
-    setDropdownOpen(false);
-    navigate('/');
+  const handleLogout = async () => {
+    setLoading(true);  // Start loading state
+    try {
+      // Simulate a delay for logout process (e.g., API call)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      localStorage.removeItem('userEmail');
+      setUsername(null);
+      setDropdownOpen(false);
+      navigate('/');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      setLoading(false);  // Reset loading state after logout
+    }
   };
 
   useEffect(() => {
@@ -78,7 +89,7 @@ const Header = () => {
         setDropdownOpen(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -91,7 +102,7 @@ const Header = () => {
         <div className="container mx-auto flex justify-between items-center py-4 px-6">
           <div className="text-2xl font-bold">
             <a href="/">
-              <img src={logo} alt="Logo" className="w-[90px] " />
+              <img src={logo} alt="Logo" className="w-[90px]" />
             </a>
           </div>
           <nav>
@@ -128,7 +139,14 @@ const Header = () => {
                           onClick={handleLogout}
                           className="block px-4 py-2 text-lg hover:bg-gray-200 w-full text-left"
                         >
-                          Logout
+                          {loading ? (
+                              <div className="flex justify-center items-center space-x-2">
+                                <div className="w-5 h-5 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
+                                <span>Logging out...</span>
+                              </div>
+                            ) : (
+                              <span>Logout</span>
+                            )}
                         </button>
                       </li>
                     </ul>

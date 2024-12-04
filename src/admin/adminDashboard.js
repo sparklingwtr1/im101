@@ -8,14 +8,23 @@ import SalesReportManagement from '../admin/SalesReportManagement'; // Import th
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('menu'); // Default active tab
+  const [loading, setLoading] = useState(false);  // Added loading state
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Clear any auth-related info and navigate to login page
-    localStorage.removeItem('adminEmail');
-    navigate('/');
-  };
+  const handleLogout = async () => {
+    setLoading(true);  // Start loading state
+    try {
+      // Simulate a delay for logout process (e.g., API call)
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
+      localStorage.removeItem('adminEmail');
+      navigate('/');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      setLoading(false);  // Reset loading state after logout
+    }
+  };
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -52,7 +61,14 @@ const AdminDashboard = () => {
           onClick={handleLogout}
           className="mt-auto bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg w-full"
         >
-          Logout
+          {loading ? (
+                              <div className="flex justify-center items-center space-x-2">
+                                <div className="w-5 h-5 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
+                                <span>Logging out...</span>
+                              </div>
+                            ) : (
+                              <span>Logout</span>
+                            )}
         </button>
       </aside>
 
